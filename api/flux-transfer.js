@@ -216,36 +216,51 @@ Keep it concise and accurate.`;
       }
       
       if (styleId === 'chinese') {
-        // 중국 - Claude가 3가지 스타일 중 선택
+        // 중국 - Claude가 3가지 스타일 중 선택 (한국 구조 복사)
         promptText = `Analyze this photo and select the BEST Chinese traditional painting style.
 
 You must choose ONE of these THREE styles:
 
-Style 1: Chinese Ink Wash (水墨畫)
-- Best for: landscapes, nature
-- Style: Monochrome ink gradations, flowing brushstrokes, minimalist
+Style 1: Chinese Gongbi Meticulous Painting (工筆畫)
+- Best for: people, portraits, daily life, detailed subjects, colorful compositions
+- Characteristics: Extremely fine detailed brushwork, delicate precise lines, rich mineral pigments and brilliant colors, ornate decorative patterns, imperial court quality
+- When: Photo has people, faces, human subjects
 
-Style 2: Chinese Gongbi (工筆畫)
-- Best for: people, portraits
-- Style: Fine detailed brushwork, rich colors, ornate patterns
+Style 2: Chinese Ink Wash Painting (水墨畫 Shuimohua)
+- Best for: landscapes, mountains, nature, trees, contemplative subjects
+- Characteristics: Monochrome black ink with gradations, soft flowing brushstrokes, minimalist composition with elegant empty space, misty atmosphere
+- When: Photo has natural landscapes, mountains, scenery
 
-Style 3: Chinese Huaniao (花鳥畫)
-- Best for: birds, flowers, animals
-- Style: Naturalistic rendering, meticulous brushwork
+Style 3: Chinese Huaniao Bird-and-Flower (花鳥畫)
+- Best for: birds, flowers, animals, plants, natural subjects
+- Characteristics: Detailed naturalistic rendering, precise meticulous brushwork for feathers and petals, delicate soft colors, harmonious composition
+- When: Photo has animals, flowers, plants
 
-Instructions:
-1. If photo has MALE person → start prompt with "MALE person, masculine features"
-2. If FEMALE person → start with "FEMALE person, feminine features"  
-3. NO Japanese text (ひらがな/カタカナ)
+Analyze the photo and choose the MOST suitable style.
 
-Return ONLY JSON:
+CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
+1. GENDER PRESERVATION (MANDATORY IN PROMPT):
+   - FIRST identify if photo has person(s) and their gender
+   - If MALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows MALE person, ABSOLUTELY PRESERVE MASCULINE FEATURES - strong jaw, masculine face, male body structure, DO NOT feminize, DO NOT make female-looking face, KEEP MALE GENDER EXACTLY."
+   - If FEMALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows FEMALE person, ABSOLUTELY PRESERVE FEMININE FEATURES - soft face, feminine features, female body structure, DO NOT masculinize, KEEP FEMALE GENDER EXACTLY."
+   - This gender instruction MUST be the FIRST thing in your generated prompt before any style description
+
+2. JAPANESE TEXT PROHIBITION (CRITICAL):
+   - ABSOLUTELY NO Japanese hiragana (ひらがな) - NEVER ALLOWED
+   - ABSOLUTELY NO Japanese katakana (カタカナ) - NEVER ALLOWED
+   - Any Japanese text = COMPLETE FAILURE
+   - This is CHINESE ART, not Japanese art
+
+Return ONLY valid JSON (no markdown):
 {
-  "analysis": "brief description",
-  "selected_artist": "Chinese Ink Wash" or "Chinese Gongbi" or "Chinese Huaniao",
-  "selected_style": "ink_wash" or "gongbi" or "huaniao",
-  "reason": "why",
-  "prompt": "Chinese [style name], [characteristics], preserve gender"
-}`;
+  "analysis": "brief photo description including gender if person present (1 sentence)",
+  "selected_artist": "Chinese Gongbi" or "Chinese Ink Wash" or "Chinese Huaniao",
+  "selected_style": "gongbi" or "ink_wash" or "huaniao",
+  "reason": "why this style fits (1 sentence)",
+  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Chinese [style name]...' with all characteristics. MUST include 'ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ), this is PURE CHINESE ART' at the end."
+}
+
+Keep it concise and accurate.`;
       }
       
       if (styleId === 'japanese') {
