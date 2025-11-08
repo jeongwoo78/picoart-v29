@@ -223,17 +223,17 @@ You must choose ONE of these THREE styles:
 
 Style 1: Chinese Ink Wash Painting (水墨畫 Shuimohua)
 - Best for: landscapes, mountains, nature, trees, contemplative subjects, simple compositions
-- Characteristics: Monochrome black ink with gradations (deep black to light grey), soft flowing brushstrokes, minimalist composition with elegant empty space, misty atmosphere
+- Characteristics: TRADITIONAL CHINESE BRUSH PAINTING STYLE with monochrome black ink gradations (deep black to light grey), soft flowing brushstrokes on rice paper, minimalist composition with elegant empty space, misty atmosphere, PAINTED NOT PHOTOGRAPHIC, classical ink painting aesthetic
 - When: Photo has landscapes, nature, or needs meditative serene treatment
 
 Style 2: Chinese Gongbi Meticulous Painting (工筆畫)
 - Best for: portraits, people, detailed subjects, colorful compositions
-- Characteristics: Extremely fine detailed brushwork, delicate precise lines, rich mineral pigments and brilliant colors, ornate decorative patterns, imperial court quality
+- Characteristics: TRADITIONAL CHINESE PAINTING STYLE with extremely fine detailed brushwork, delicate precise lines painted on silk or paper, rich mineral pigments and brilliant colors, ornate decorative patterns, imperial court quality, PAINTED NOT PHOTOGRAPHIC, classical Chinese art aesthetic
 - When: Photo has people, faces, or needs detailed colorful treatment
 
 Style 3: Chinese Huaniao Bird-and-Flower (花鳥畫)
 - Best for: birds, flowers, animals, plants, natural subjects
-- Characteristics: Detailed naturalistic rendering, precise meticulous brushwork for feathers and petals, delicate soft colors, harmonious composition
+- Characteristics: TRADITIONAL CHINESE PAINTING STYLE with detailed naturalistic rendering, precise meticulous brushwork for feathers and petals painted on silk, delicate soft colors, harmonious composition, PAINTED NOT PHOTOGRAPHIC, classical Chinese art aesthetic
 - When: Photo has birds, flowers, animals, or plants
 
 Analyze the photo and choose the MOST suitable style.
@@ -537,7 +537,7 @@ export default async function handler(req, res) {
             prompt: finalPrompt,
             num_inference_steps: 24,       // 28→24 속도 최적화 (약 20% 빠름)
             guidance: 12,                   // 프롬프트 엄격 준수 (일본어/성별 보존)
-            control_strength: 1.0,          // 구도 완벽 유지 (일관성 최대화)
+            control_strength: 0.85,         // 구도 유지 (1.0→0.85 스타일 적용 강화)
             output_format: 'jpg',
             output_quality: 90
           }
