@@ -101,12 +101,12 @@ const fallbackPrompts = {
   // ========================================
   korean: {
     name: '한국 전통화',
-    prompt: 'Korean traditional painting in authentic Joseon Dynasty style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Korean style based on photo subject (Minhwa folk art for animals/flowers with bold outlines and bright Obangsaek colors, Pungsokdo genre painting for people/daily life with refined brushwork, Jingyeong landscape for nature/mountains with expressive ink), 3) Use Korean aesthetic sensibility - natural colors, elegant brushwork on hanji paper, Korean cultural elements. ALLOWED TEXT: Korean Hangul (한글) and Chinese characters (漢字) only. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). NOT Chinese style, NOT Japanese ukiyo-e. This is PURE KOREAN ART.'
+    prompt: 'Korean traditional painting in authentic Joseon Dynasty style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Korean style based on photo subject (Minhwa folk art for animals/flowers with bold outlines and bright Obangsaek colors, Pungsokdo genre painting for people/daily life with refined brushwork, Jingyeong landscape for nature/mountains with expressive ink), 3) Use Korean aesthetic sensibility. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE KOREAN ART, not Japanese ukiyo-e.'
   },
   
   chinese: {
     name: '중국 전통화',
-    prompt: 'Chinese traditional painting in authentic classical style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Chinese style based on photo subject (Shuimohua ink wash for landscapes/nature with monochrome gradations, Gongbi meticulous painting for people/portraits with fine detailed brushwork and rich colors, Huaniao bird-and-flower for animals/plants with precise naturalistic rendering), 3) Use Chinese aesthetic principles - elegant empty space, flowing brushwork, classical composition. ALLOWED TEXT: Chinese characters (漢字) only. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). NOT Korean style, NOT Japanese style. This is PURE CHINESE ART.'
+    prompt: 'Chinese traditional painting in authentic classical style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Chinese style based on photo subject (Shuimohua ink wash for landscapes/nature with monochrome gradations, Gongbi meticulous painting for people/portraits with fine detailed brushwork and rich colors, Huaniao bird-and-flower for animals/plants with precise naturalistic rendering), 3) Use Chinese aesthetic principles. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE CHINESE ART.'
   },
   
   japanese: {
@@ -190,18 +190,26 @@ Style 3: Korean Jingyeong Landscape (진경산수)
 
 Analyze the photo and choose the MOST suitable style.
 
-CRITICAL INSTRUCTIONS:
-1. GENDER PRESERVATION: If photo has people, preserve exact gender and facial features (male stays male, female stays female)
-2. CULTURAL PURITY: ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE KOREAN ART.
-3. ALLOWED TEXT: Korean Hangul (한글) and Chinese characters (漢字) only
+CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
+1. GENDER PRESERVATION (MANDATORY IN PROMPT):
+   - FIRST identify if photo has person(s) and their gender
+   - If MALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows MALE person, ABSOLUTELY PRESERVE MASCULINE FEATURES - strong jaw, masculine face, male body structure, DO NOT feminize, DO NOT make female-looking face, KEEP MALE GENDER EXACTLY."
+   - If FEMALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows FEMALE person, ABSOLUTELY PRESERVE FEMININE FEATURES - soft face, feminine features, female body structure, DO NOT masculinize, KEEP FEMALE GENDER EXACTLY."
+   - This gender instruction MUST be the FIRST thing in your generated prompt before any style description
+
+2. JAPANESE TEXT PROHIBITION (CRITICAL):
+   - ABSOLUTELY NO Japanese hiragana (ひらがな) - NEVER ALLOWED
+   - ABSOLUTELY NO Japanese katakana (カタカナ) - NEVER ALLOWED
+   - Any Japanese text = COMPLETE FAILURE
+   - This is KOREAN ART, not Japanese art
 
 Return ONLY valid JSON (no markdown):
 {
-  "analysis": "brief photo description (1 sentence)",
+  "analysis": "brief photo description including gender if person present (1 sentence)",
   "selected_artist": "Korean Minhwa" or "Korean Pungsokdo" or "Korean Jingyeong Landscape",
   "selected_style": "minhwa" or "pungsokdo" or "landscape",
   "reason": "why this style fits (1 sentence)",
-  "prompt": "Complete FLUX prompt starting with 'Korean [style name]...' including all characteristics and critical instructions"
+  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Korean [style name]...' with all characteristics. MUST include 'ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ), this is PURE KOREAN ART' at the end."
 }
 
 Keep it concise and accurate.`;
@@ -230,18 +238,26 @@ Style 3: Chinese Huaniao Bird-and-Flower (花鳥畫)
 
 Analyze the photo and choose the MOST suitable style.
 
-CRITICAL INSTRUCTIONS:
-1. GENDER PRESERVATION: If photo has people, preserve exact gender and facial features (male stays male, female stays female)
-2. CULTURAL PURITY: ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE CHINESE ART.
-3. ALLOWED TEXT: Chinese characters (漢字) only
+CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
+1. GENDER PRESERVATION (MANDATORY IN PROMPT):
+   - FIRST identify if photo has person(s) and their gender
+   - If MALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows MALE person, ABSOLUTELY PRESERVE MASCULINE FEATURES - strong jaw, masculine face, male body structure, DO NOT feminize, DO NOT make female-looking face, KEEP MALE GENDER EXACTLY."
+   - If FEMALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows FEMALE person, ABSOLUTELY PRESERVE FEMININE FEATURES - soft face, feminine features, female body structure, DO NOT masculinize, KEEP FEMALE GENDER EXACTLY."
+   - This gender instruction MUST be the FIRST thing in your generated prompt before any style description
+
+2. JAPANESE TEXT PROHIBITION (CRITICAL):
+   - ABSOLUTELY NO Japanese hiragana (ひらがな) - NEVER ALLOWED
+   - ABSOLUTELY NO Japanese katakana (カタカナ) - NEVER ALLOWED
+   - Any Japanese text = COMPLETE FAILURE
+   - This is CHINESE ART, not Japanese art
 
 Return ONLY valid JSON (no markdown):
 {
-  "analysis": "brief photo description (1 sentence)",
+  "analysis": "brief photo description including gender if person present (1 sentence)",
   "selected_artist": "Chinese Ink Wash" or "Chinese Gongbi" or "Chinese Huaniao",
   "selected_style": "ink_wash" or "gongbi" or "huaniao",
   "reason": "why this style fits (1 sentence)",
-  "prompt": "Complete FLUX prompt starting with 'Chinese [style name]...' including all characteristics and critical instructions"
+  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Chinese [style name]...' with all characteristics. MUST include 'ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ), this is PURE CHINESE ART' at the end."
 }
 
 Keep it concise and accurate.`;
@@ -367,6 +383,8 @@ export default async function handler(req, res) {
     console.log('Has REPLICATE_API_KEY:', !!process.env.REPLICATE_API_KEY);
     console.log('Has ANTHROPIC_API_KEY:', !!process.env.ANTHROPIC_API_KEY);
     console.log('Has image:', !!image);
+    console.log('Image length:', image ? image.length : 0);
+    console.log('Image starts with:', image ? image.substring(0, 50) : 'N/A');
     console.log('Has selectedStyle:', !!selectedStyle);
     console.log('selectedStyle:', selectedStyle);
 
@@ -519,7 +537,7 @@ export default async function handler(req, res) {
             prompt: finalPrompt,
             num_inference_steps: 24,       // 28→24 속도 최적화 (약 20% 빠름)
             guidance: 12,                   // 프롬프트 엄격 준수 (일본어/성별 보존)
-            control_strength: 0.7,          // 구도 유지 강도 (원본 충실도 향상)
+            control_strength: 1.0,          // 구도 완벽 유지 (일관성 최대화)
             output_format: 'jpg',
             output_quality: 90
           }
