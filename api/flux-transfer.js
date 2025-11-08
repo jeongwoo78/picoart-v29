@@ -430,19 +430,6 @@ export default async function handler(req, res) {
         style: 'japanese_ukiyoe'
       };
       
-    } else if (selectedStyle.category === 'oriental' && selectedStyle.id === 'chinese') {
-      // 중국 전통화 - AI 타임아웃 문제로 바로 fallback 사용
-      console.log('Chinese Traditional Art - using fallback (skip AI due to timeout)');
-      
-      const fallback = fallbackPrompts.chinese;
-      finalPrompt = fallback.prompt;
-      selectedArtist = fallback.name;
-      selectionMethod = 'oriental_fallback';
-      selectionDetails = {
-        style: 'chinese_traditional',
-        reason: 'Direct fallback to avoid AI timeout'
-      };
-      
     } else if (process.env.ANTHROPIC_API_KEY) {
       console.log(`Trying AI artist selection for ${selectedStyle.name}...`);
       
