@@ -106,7 +106,7 @@ const fallbackPrompts = {
   
   chinese: {
     name: '중국 전통화',
-    prompt: 'TRADITIONAL CHINESE PAINTING STYLE in authentic classical brush painting technique. Transform photo into PAINTED ARTWORK (NOT PHOTOGRAPHIC). CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Chinese painting style: Gongbi meticulous painting for people/portraits with extremely fine detailed brushwork painted on silk, rich mineral pigments and brilliant colors, ornate decorative patterns, imperial court quality; OR Shuimohua ink wash for landscapes with monochrome black ink gradations on rice paper, soft flowing brushstrokes; OR Huaniao bird-and-flower for animals/plants with precise meticulous brushwork. 3) PAINTED NOT PHOTOGRAPHIC - use traditional Chinese brush painting aesthetic with visible brushstrokes on silk or rice paper, classical Chinese art style. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE CHINESE TRADITIONAL PAINTING ART.'
+    prompt: 'Chinese traditional painting in authentic classical style. CRITICAL INSTRUCTIONS: 1) GENDER PRESERVATION - carefully preserve exact gender and facial features from original photo (male stays male with masculine face, female stays female with feminine features), 2) Choose appropriate Chinese painting style: Gongbi meticulous painting for people/portraits with fine detailed brushwork and rich colors, Shuimohua ink wash for landscapes with monochrome ink gradations, Huaniao bird-and-flower for animals/plants with precise naturalistic rendering. 3) Use traditional Chinese brush painting aesthetic on silk or paper. ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ). This is PURE CHINESE ART.'
   },
   
   japanese: {
@@ -221,46 +221,31 @@ Keep it concise and accurate.`;
 
 You must choose ONE of these THREE styles:
 
-Style 1: Chinese Ink Wash Painting (水墨畫 Shuimohua)
-- Best for: landscapes, mountains, nature, trees, contemplative subjects, simple compositions
-- Characteristics: TRADITIONAL CHINESE BRUSH PAINTING STYLE with monochrome black ink gradations (deep black to light grey), soft flowing brushstrokes on rice paper, minimalist composition with elegant empty space, misty atmosphere, PAINTED NOT PHOTOGRAPHIC, classical ink painting aesthetic
-- When: Photo has landscapes, nature, or needs meditative serene treatment
+Style 1: Chinese Ink Wash (水墨畫)
+- Best for: landscapes, nature
+- Style: Monochrome ink gradations, flowing brushstrokes, minimalist
 
-Style 2: Chinese Gongbi Meticulous Painting (工筆畫)
-- Best for: portraits, people, detailed subjects, colorful compositions
-- Characteristics: TRADITIONAL CHINESE PAINTING STYLE with extremely fine detailed brushwork, delicate precise lines painted on silk or paper, rich mineral pigments and brilliant colors, ornate decorative patterns, imperial court quality, PAINTED NOT PHOTOGRAPHIC, classical Chinese art aesthetic
-- When: Photo has people, faces, or needs detailed colorful treatment
+Style 2: Chinese Gongbi (工筆畫)
+- Best for: people, portraits
+- Style: Fine detailed brushwork, rich colors, ornate patterns
 
-Style 3: Chinese Huaniao Bird-and-Flower (花鳥畫)
-- Best for: birds, flowers, animals, plants, natural subjects
-- Characteristics: TRADITIONAL CHINESE PAINTING STYLE with detailed naturalistic rendering, precise meticulous brushwork for feathers and petals painted on silk, delicate soft colors, harmonious composition, PAINTED NOT PHOTOGRAPHIC, classical Chinese art aesthetic
-- When: Photo has birds, flowers, animals, or plants
+Style 3: Chinese Huaniao (花鳥畫)
+- Best for: birds, flowers, animals
+- Style: Naturalistic rendering, meticulous brushwork
 
-Analyze the photo and choose the MOST suitable style.
+Instructions:
+1. If photo has MALE person → start prompt with "MALE person, masculine features"
+2. If FEMALE person → start with "FEMALE person, feminine features"  
+3. NO Japanese text (ひらがな/カタカナ)
 
-CRITICAL INSTRUCTIONS FOR PROMPT GENERATION:
-1. GENDER PRESERVATION (MANDATORY IN PROMPT):
-   - FIRST identify if photo has person(s) and their gender
-   - If MALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows MALE person, ABSOLUTELY PRESERVE MASCULINE FEATURES - strong jaw, masculine face, male body structure, DO NOT feminize, DO NOT make female-looking face, KEEP MALE GENDER EXACTLY."
-   - If FEMALE in photo → prompt MUST start with "CRITICAL GENDER RULE: This photo shows FEMALE person, ABSOLUTELY PRESERVE FEMININE FEATURES - soft face, feminine features, female body structure, DO NOT masculinize, KEEP FEMALE GENDER EXACTLY."
-   - This gender instruction MUST be the FIRST thing in your generated prompt before any style description
-
-2. JAPANESE TEXT PROHIBITION (CRITICAL):
-   - ABSOLUTELY NO Japanese hiragana (ひらがな) - NEVER ALLOWED
-   - ABSOLUTELY NO Japanese katakana (カタカナ) - NEVER ALLOWED
-   - Any Japanese text = COMPLETE FAILURE
-   - This is CHINESE ART, not Japanese art
-
-Return ONLY valid JSON (no markdown):
+Return ONLY JSON:
 {
-  "analysis": "brief photo description including gender if person present (1 sentence)",
+  "analysis": "brief description",
   "selected_artist": "Chinese Ink Wash" or "Chinese Gongbi" or "Chinese Huaniao",
   "selected_style": "ink_wash" or "gongbi" or "huaniao",
-  "reason": "why this style fits (1 sentence)",
-  "prompt": "Complete FLUX prompt starting with GENDER RULE if person present, then 'Chinese [style name]...' with all characteristics. MUST include 'ABSOLUTELY NO Japanese hiragana (ひらがな) or katakana (カタカナ), this is PURE CHINESE ART' at the end."
-}
-
-Keep it concise and accurate.`;
+  "reason": "why",
+  "prompt": "Chinese [style name], [characteristics], preserve gender"
+}`;
       }
       
       if (styleId === 'japanese') {
@@ -430,6 +415,19 @@ export default async function handler(req, res) {
         style: 'japanese_ukiyoe'
       };
       
+    } else if (selectedStyle.category === 'oriental' && selectedStyle.id === 'chinese') {
+      // 중국 전통화 - AI 타임아웃 문제로 바로 fallback 사용
+      console.log('Chinese Traditional Art - using fallback (skip AI due to timeout)');
+      
+      const fallback = fallbackPrompts.chinese;
+      finalPrompt = fallback.prompt;
+      selectedArtist = fallback.name;
+      selectionMethod = 'oriental_fallback';
+      selectionDetails = {
+        style: 'chinese_traditional',
+        reason: 'Direct fallback to avoid AI timeout'
+      };
+      
     } else if (process.env.ANTHROPIC_API_KEY) {
       console.log(`Trying AI artist selection for ${selectedStyle.name}...`);
       
@@ -537,7 +535,7 @@ export default async function handler(req, res) {
             prompt: finalPrompt,
             num_inference_steps: 24,       // 28→24 속도 최적화 (약 20% 빠름)
             guidance: 12,                   // 프롬프트 엄격 준수 (일본어/성별 보존)
-            control_strength: 0.85,         // 구도 유지 (1.0→0.85 스타일 적용 강화)
+            control_strength: 0.65,         // 구도 유지 (0.85→0.65 스타일 적용 대폭 강화)
             output_format: 'jpg',
             output_quality: 90
           }
