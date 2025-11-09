@@ -436,7 +436,7 @@ export default async function handler(req, res) {
       const aiResult = await selectArtistWithAI(
         image, 
         selectedStyle,  // ← selectedStyle 객체 전체 전달
-        8000 // 8초 타임아웃
+        15000 // 15초 타임아웃 (단체 사진 처리 위해)
       );
       
       if (aiResult.success) {
